@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "WhitelistReleaseCreated";
+    @model WhitelistViewModel
+}
+
+<h1></h1>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Whitelist Started</h1>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-m">(Status will refresh every 3 seconds below)</h2>
+    </div>
+    <div class="govuk-grid-column-two-thirds" id="myPartialView">
+        <partial name="WhitelistPartial" model="Model"/>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+    function refreshStatus() {
+        $("#myPartialView").load('@Url.Action("ReleaseRefresh", "Whitelist")');
+        return $("#myPartialView").text()
+    }
+
+    var timer = setInterval(function () {
+        var htmlResponse = refreshStatus();
+        console.log(htmlResponse)
+        if (htmlResponse.trim().includes("Status: Succeeded")) {
+            clearInterval(timer);
+            console.log(htmlResponse.trim())
+            console.log("Clear timer")
+        }
+    }, 3000);
+</script>
