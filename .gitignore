@@ -30,7 +30,6 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
-src/*/appsettings.Development.json
 azure-pipelines.aci.yml
 
 # Test Results
