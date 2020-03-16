@@ -5,5 +5,6 @@ namespace SFA.DAS.ReleaseTool.Core.Configuration
         public string CollectionUri { get; set; }
         public string ProjectName { get; set; }
         public string PatToken { get; set; }
+        public string RequiredRole { get; set; }
     }
 }

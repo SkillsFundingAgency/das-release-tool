@@ -30,7 +30,7 @@ namespace SFA.DAS.ReleaseTool.Web.AppStart
                 {
                     OnRedirectToLogin = (context) =>
                     {
-                        context.HttpContext.Response.Redirect($"https://{configuration["BaseUrl"]}/Account/login?returnUrl=https://localhost:5011/whitelist");
+                        context.HttpContext.Response.Redirect($"https://{configuration["BaseUrl"]}/Account/login?returnUrl=http://localhost:5011/whitelist");
                         return Task.CompletedTask;
                     }
                 };

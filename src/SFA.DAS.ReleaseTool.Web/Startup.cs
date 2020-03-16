@@ -23,7 +23,6 @@ namespace SFA.DAS.ReleaseTool.Web
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
-            //Configuration = configuration;
             _env = env;
 
             var builder = new ConfigurationBuilder()
@@ -68,6 +67,7 @@ namespace SFA.DAS.ReleaseTool.Web
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
+                    .RequireRole(_configuration["VstsConfig:RequiredRole"])
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })
@@ -113,7 +113,6 @@ namespace SFA.DAS.ReleaseTool.Web
                 await next();
             });
 
-            app.UsePathBase("/whitelist");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

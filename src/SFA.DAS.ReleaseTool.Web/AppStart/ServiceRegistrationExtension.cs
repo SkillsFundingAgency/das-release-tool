@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SFA.DAS.ReleaseTool.Core.Configuration;
+using SFA.DAS.ReleaseTool.Core.IReleases;
 using SFA.DAS.ReleaseTool.Core.IServices;
 using SFA.DAS.ReleaseTool.Core.Services;
-using SFA.DAS.ReleaseTool.Infrastructure.IReleases;
 using SFA.DAS.ReleaseTool.Infrastructure.Releases;
 
 namespace SFA.DAS.ReleaseTool.Web.AppStart

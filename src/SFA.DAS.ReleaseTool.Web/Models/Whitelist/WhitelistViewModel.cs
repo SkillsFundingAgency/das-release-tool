@@ -1,11 +1,13 @@
-using Microsoft.VisualStudio.Services.ReleaseManagement.WebApi;
+using System.ComponentModel.DataAnnotations;
 
-namespace SFA.DAS.ReleaseTool.Web.Models.Whitelist
+namespace SFA.DAS.ReleaseTool.Web.Models
 {
     public class WhitelistViewModel
     {
-        public DeploymentStatus deploymentStatus { get; set; }
-        public int releaseId { get; set; }
-        public int releaseDefinitionId { get; set; }
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string IpAddress { get; set; }
     }
 }

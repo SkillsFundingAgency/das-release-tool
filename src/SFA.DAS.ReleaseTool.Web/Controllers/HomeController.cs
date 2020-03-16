@@ -14,49 +14,19 @@ namespace SFA.DAS.ReleaseTool.Web.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly ILogger logger;
-        private readonly IReleaseService releaseService;
+        private readonly ILogger _logger;
+        private readonly IReleaseService _releaseService;
 
-        public HomeController(ILogger<HomeController> _logger, IReleaseService _releaseService)
+        public HomeController(ILogger<HomeController> logger, IReleaseService releaseService)
         {
-            logger = _logger;
-            releaseService = _releaseService;
+            _logger = logger;
+            _releaseService = releaseService;
         }
 
         [HttpGet("")]
         public IActionResult Index()
         {
-            var indexViewModel = new IndexViewModel();
-            return View("Index", indexViewModel);
-        }
-
-        [HttpPost("")]
-        [ValidateAntiForgeryToken]
-        public IActionResult StartRelease(IndexViewModel indexViewModel)
-        {
-            if (String.IsNullOrEmpty(indexViewModel.IpAddress))
-            {
-                logger.LogError("IP Address cannot be null");
-                return new BadRequestResult();
-            }
-
-            var whiteListDefinition = releaseService.GetRelease(ReleaseConstants.ReleaseName);
-
-            if (whiteListDefinition == null)
-            {
-                logger.LogError($"Release {ReleaseConstants.ReleaseName} not found!");
-                return new NotFoundResult();
-            }
-
-            var ipAddressKey = whiteListDefinition.Variables.Where(v => v.Value.AllowOverride == true).First();
-
-            logger.LogInformation($"Creating release: {whiteListDefinition.Name}");
-
-            var release = releaseService.CreateRelease(whiteListDefinition.Id, indexViewModel.IpAddress);
-
-            TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefinitionReference.Id });
-
-            return RedirectToAction("ReleaseStarted", "Whitelist");
+            return null;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

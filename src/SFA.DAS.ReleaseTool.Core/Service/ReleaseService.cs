@@ -1,6 +1,6 @@
-using Microsoft.VisualStudio.Services.ReleaseManagement.WebApi;
+using SFA.DAS.ReleaseTool.Core.Entities;
+using SFA.DAS.ReleaseTool.Core.IReleases;
 using SFA.DAS.ReleaseTool.Core.IServices;
-using SFA.DAS.ReleaseTool.Infrastructure.IReleases;
 using System.Collections.Generic;
 
 namespace SFA.DAS.ReleaseTool.Core.Services
@@ -14,28 +14,35 @@ namespace SFA.DAS.ReleaseTool.Core.Services
             releaseClient = _releaseClient;
         }
 
-        public List<ReleaseDefinition> GetReleases()
+        public List<VstsReleaseDefinition> GetReleases()
         {
             var releases = releaseClient.GetReleases();
 
             return releases;
         }
 
-        public ReleaseDefinition GetRelease(string releaseName)
+        public VstsReleaseDefinition GetRelease(string releaseName)
         {
             var release = releaseClient.GetRelease(releaseName);
 
             return release;
         }
 
-        public Release CreateRelease(int releaseId, string ipAddress)
+        public VstsRelease CreateRelease(int releaseId, Dictionary<string, string> overrideParameters)
         {
-            var release = releaseClient.CreateRelease(releaseId, ipAddress);
+            var release = releaseClient.CreateRelease(releaseId, overrideParameters);
 
             return release;
         }
 
-        public DeploymentStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId)
+        public VstsRelease CreateRelease(int releaseId)
+        {
+            var release = releaseClient.CreateRelease(releaseId);
+
+            return release;
+        }
+
+        public VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
             var releaseStatus = releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
 
