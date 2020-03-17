@@ -110,7 +110,7 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
         {
             ReleaseStartMetadata releaseStartMetaData = new ReleaseStartMetadata();
             releaseStartMetaData.DefinitionId = releaseDefinitionId;
-            releaseStartMetaData.Description = "Release created by das-release-tool";
+            releaseStartMetaData.Description = "Release created by das-self-service";
 
             if (overrideVaraibles != null)
             {
