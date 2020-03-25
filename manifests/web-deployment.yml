@@ -58,13 +58,13 @@ spec:
           value: {{IngressHost}}
         - name: RedisConnectionString
           value: {{RedisConnectionString}}
-        - name: VstsConfig:CollectionUri
+        - name: VstsConfig__CollectionUri
           value: {{CollectionUri}}
-        - name: VstsConfig:ProjectName
+        - name: VstsConfig__ProjectName
           value: {{ProjectName}}
-        - name: VstsConfig:PatToken
+        - name: VstsConfig__PatToken
           value: {{PatToken}}
-        - name: VstsConfig:RequiredRole
+        - name: VstsConfig__RequiredRole
           value: {{RequiredRole}}
 
         image: {{WebImage}}
