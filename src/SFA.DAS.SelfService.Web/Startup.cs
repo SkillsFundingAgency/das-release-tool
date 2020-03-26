@@ -61,8 +61,6 @@ namespace SFA.DAS.SelfService.Web
             services.AddAuthentication(_configuration);
             services.AddHealthChecks();
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             services.AddRouting(options => options.LowercaseUrls = true);
 
             services.AddMvc(options =>

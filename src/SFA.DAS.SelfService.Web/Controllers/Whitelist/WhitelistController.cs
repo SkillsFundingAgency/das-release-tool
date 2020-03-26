@@ -17,20 +17,17 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
     {
         private readonly IReleaseService _releaseService;
         private readonly ILogger _logger;
-        private readonly IHttpContextAccessor _accessor;
 
-        public WhitelistController(ILogger<WhitelistController> logger, IReleaseService releaseService, IHttpContextAccessor accessor)
+        public WhitelistController(ILogger<WhitelistController> logger, IReleaseService releaseService)
         {
             _releaseService = releaseService;
             _logger = logger;
-            _accessor = accessor;
         }
 
         [HttpGet("")]
         public IActionResult Index()
         {
             var whitelistViewModel = new WhitelistViewModel();
-            whitelistViewModel.IpAddress = _accessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
             return View(whitelistViewModel);
         }
