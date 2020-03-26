@@ -2,6 +2,11 @@
     ViewData["Title"] = "Home";
     @model WhitelistViewModel
     @using SFA.DAS.SelfService.Web.Configuration
+
+    var ipAddressInvalid = !ViewData.ModelState.IsValid
+                            && ViewData.ModelState.ContainsKey("IpAddress") &&
+                            ViewData.ModelState["IpAddress"].Errors != null &&
+                            ViewData.ModelState["IpAddress"].Errors.Any();
 }
 
 <div class="govuk-grid-row">
@@ -11,21 +16,32 @@
         </h1>
         <p class="govuk-body">To Whitelist your IP Address on DAS DEV &amp; PP Servers enter your details below.</p>
 
-
         <form asp-route="@WhitelistRouteNames.CreateRelease" method="post">
             <div class="govuk-form-group">
                 <label asp-for="Name" class="govuk-label control-label">
                     Full Name
                 </label>
-                <span asp-validation-for="Name" class="ext-danger">
+                <span asp-validation-for="Name" class="ext-danger" />
                 </span>
                 <input asp-for="Name" class="govuk-input" required />
             </div>
-            <div class="govuk-form-group">
+            <div class="govuk-form-group @(ipAddressInvalid ? "govuk-form-group--error" : "")">
                 <label asp-for="IpAddress" class="govuk-label">
                     IP Address
                 </label>
-                <input asp-for="IpAddress" id="ipAddress" class="govuk-input" required />
+                @if (ipAddressInvalid)
+                {
+                    var ipAddressModelState = @ViewData.ModelState["IpAddress"];
+
+                    if (ipAddressModelState.Errors != null && ipAddressModelState.Errors.Any())
+                    {
+                        <span id="IpAddress" class="govuk-error-message">
+                            @ipAddressModelState.Errors.First().ErrorMessage
+                        </span>
+                    }
+                }
+                <span asp-validation-for="IpAddress" class="ext-danger" />
+                <input asp-for="IpAddress" id="ipAddress" class="govuk-input @(ipAddressInvalid ? "govuk-input--error" : "")" required />
             </div>
             <div class="govuk-form-group">
                 <button class="govuk-button" data-module="govuk-button">
@@ -39,9 +55,9 @@
 <script type="text/javascript">
     window.onload = function () {
         fetch('https://jsonip.com', { mode: 'cors' })
-          .then((resp) => resp.json())
+            .then((resp) => resp.json())
             .then((ip) => {
                 document.getElementById("ipAddress").value = ip.ip;
-          });
+            });
     };
 </script>

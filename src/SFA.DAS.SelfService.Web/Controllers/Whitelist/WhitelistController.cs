@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.SelfService.Core.Configuration;
@@ -33,14 +32,18 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
         }
 
         [HttpPost("start", Name = WhitelistRouteNames.CreateRelease)]
-        public IActionResult StartRelease(IndexViewModel indexViewModel)
+        public IActionResult StartRelease(WhitelistViewModel whitelistViewModel)
         {
-            if (String.IsNullOrEmpty(indexViewModel.IpAddress))
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid Model State");
+                return View("Index", whitelistViewModel);
+            }
+            if (String.IsNullOrEmpty(whitelistViewModel.IpAddress))
             {
                 _logger.LogError("IP Address cannot be null");
                 return new BadRequestResult();
             }
-
             var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseName);
 
             if (whiteListDefinition == null)
@@ -53,7 +56,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             var overrideParameters = new Dictionary<string, string>()
             {
-                { WhitelistConstants.OverrideKey, indexViewModel.IpAddress }
+                { WhitelistConstants.OverrideKey, whitelistViewModel.IpAddress }
             };
 
             var release = _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
