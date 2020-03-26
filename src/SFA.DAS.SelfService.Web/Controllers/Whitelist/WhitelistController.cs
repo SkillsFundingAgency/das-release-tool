@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.SelfService.Core.Configuration;
@@ -16,18 +17,20 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
     {
         private readonly IReleaseService _releaseService;
         private readonly ILogger _logger;
+        private readonly IHttpContextAccessor _accessor;
 
-        public WhitelistController(ILogger<WhitelistController> logger, IReleaseService releaseService)
+        public WhitelistController(ILogger<WhitelistController> logger, IReleaseService releaseService, IHttpContextAccessor accessor)
         {
             _releaseService = releaseService;
             _logger = logger;
+            _accessor = accessor;
         }
 
         [HttpGet("")]
         public IActionResult Index()
         {
             var whitelistViewModel = new WhitelistViewModel();
-            whitelistViewModel.IpAddress = this.Request.HttpContext.Connection.RemoteIpAddress.ToString();
+            whitelistViewModel.IpAddress = _accessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
             return View(whitelistViewModel);
         }
