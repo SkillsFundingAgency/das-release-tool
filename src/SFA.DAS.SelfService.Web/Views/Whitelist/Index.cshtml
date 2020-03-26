@@ -9,6 +9,8 @@
         <h1 class="govuk-heading-xl">
             DAS Whitelist
         </h1>
+        <p class="govuk-body">To Whitelist your IP Address on DAS DEV &amp; PP Servers enter your details below.</p>
+
 
         <form asp-route="@WhitelistRouteNames.CreateRelease" method="post">
             <div class="govuk-form-group">
@@ -23,6 +25,7 @@
                 <label asp-for="IpAddress" class="govuk-label">
                     IP Address
                 </label>
+                <p>@Model.IpAddress</p>
                 <input asp-for="IpAddress" class="govuk-input" required />
             </div>
             <div class="govuk-form-group">

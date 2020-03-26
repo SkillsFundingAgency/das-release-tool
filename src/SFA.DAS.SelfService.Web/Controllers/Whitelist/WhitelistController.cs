@@ -27,6 +27,8 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
         public IActionResult Index()
         {
             var whitelistViewModel = new WhitelistViewModel();
+            whitelistViewModel.IpAddress = this.Request.HttpContext.Connection.RemoteIpAddress.ToString();
+
             return View(whitelistViewModel);
         }
 
