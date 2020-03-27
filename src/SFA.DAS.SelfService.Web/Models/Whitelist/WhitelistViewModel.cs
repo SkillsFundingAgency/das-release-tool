@@ -4,10 +4,10 @@ namespace SFA.DAS.SelfService.Web.Models
 {
     public class WhitelistViewModel
     {
-        [Required]
-        public string Name { get; set; }
+        public string UserId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please enter a valid IPV4 Address")]
+        [RegularExpression(@"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$", ErrorMessage = "Please enter a valid IPV4 Address")]
         public string IpAddress { get; set; }
     }
 }

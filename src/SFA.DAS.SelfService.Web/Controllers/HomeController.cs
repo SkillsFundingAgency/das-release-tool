@@ -24,11 +24,5 @@ namespace SFA.DAS.SelfService.Web.Controllers
         {
             return null;
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier });
-        }
     }
 }
