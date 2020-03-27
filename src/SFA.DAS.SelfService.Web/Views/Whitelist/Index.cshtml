@@ -14,17 +14,17 @@
         <h1 class="govuk-heading-xl">
             DAS Whitelist
         </h1>
-        <p class="govuk-body">To Whitelist your IP Address on DAS DEV &amp; PP Servers enter your details below.</p>
-
-        <form asp-route="@WhitelistRouteNames.CreateRelease" method="post">
-            <div class="govuk-form-group">
-                <label asp-for="Name" class="govuk-label control-label">
-                    Full Name
-                </label>
-                <span asp-validation-for="Name" class="ext-danger" />
+        <details class="govuk-details" data-module="govuk-details">
+            <summary class="govuk-details__summary">
+                <span class="govuk-details__summary-text">
+                    IP Whitelist for DAS SQL Servers
                 </span>
-                <input asp-for="Name" class="govuk-input" required />
+            </summary>
+            <div class="govuk-details__text">
+                This will whitelist your IP Address on DAS Shared SQL Servers for AT, TEST, TEST2, Demo and PP.
             </div>
+        </details>
+        <form asp-route="@WhitelistRouteNames.CreateRelease" method="post">
             <div class="govuk-form-group @(ipAddressInvalid ? "govuk-form-group--error" : "")">
                 <label asp-for="IpAddress" class="govuk-label">
                     IP Address
@@ -40,8 +40,11 @@
                         </span>
                     }
                 }
-                <span asp-validation-for="IpAddress" class="ext-danger" />
-                <input asp-for="IpAddress" id="ipAddress" class="govuk-input @(ipAddressInvalid ? "govuk-input--error" : "")" required />
+                <span id="account-number-hint" class="govuk-hint">
+                    Your public IPV4 address. We will try to prepopulate it for you.
+                </span>
+                <input asp-for="IpAddress" id="ipAddress" class="govuk-input govuk-input--width-20 @(ipAddressInvalid ? "govuk-input--error" : "")"/>
+
             </div>
             <div class="govuk-form-group">
                 <button class="govuk-button" data-module="govuk-button">

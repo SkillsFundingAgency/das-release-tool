@@ -8,11 +8,13 @@ using SFA.DAS.SelfService.Web.Models;
 using SFA.DAS.SelfService.Web.Models.Whitelist;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 {
     [Route("/whitelist")]
-    public class WhitelistController : BaseController
+    public class WhitelistController : BaseController<WhitelistController>
     {
         private readonly IReleaseService _releaseService;
         private readonly ILogger _logger;
@@ -44,6 +46,11 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 _logger.LogError("IP Address cannot be null");
                 return new BadRequestResult();
             }
+
+            var claimName = GetClaimName(this.Request.HttpContext.User.Claims);
+
+            whitelistViewModel.UserId = claimName;
+
             var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseName);
 
             if (whiteListDefinition == null)
@@ -56,7 +63,8 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             var overrideParameters = new Dictionary<string, string>()
             {
-                { WhitelistConstants.OverrideKey, whitelistViewModel.IpAddress }
+                { WhitelistConstants.IpAddressOverrideKey, whitelistViewModel.IpAddress },
+                { WhitelistConstants.UserIdOverrideKey, whitelistViewModel.UserId }
             };
 
             var release = _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
@@ -82,6 +90,19 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
             var whitelistViewModel = new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
 
             return PartialView("ReleaseCreatedPartial", whitelistViewModel);
+        }
+
+        public string GetClaimName(IEnumerable<Claim> claims)
+        {
+            var claimName = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
+
+            if (String.IsNullOrEmpty(claimName))
+            {
+                _logger.LogError("Cannot find valid claim name to start whitelist");
+                throw new UnauthorizedAccessException();
+            }
+
+            return claimName;
         }
     }
 }
