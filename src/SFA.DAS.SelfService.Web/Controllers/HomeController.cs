@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.SelfService.Core.IServices;
-using SFA.DAS.SelfService.Web.Models;
-using System.Diagnostics;
 
 namespace SFA.DAS.SelfService.Web.Controllers
 {

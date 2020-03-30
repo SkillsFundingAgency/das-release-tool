@@ -3,6 +3,6 @@
     @model WhitelistReleaseViewModel
 }
 
-<p class="govuk-body">Status: @Model.deploymentStatus</p>
+<p class="govuk-body govuk-!-font-weight-bold">Status: @Model.deploymentStatus.GetDescription()</p>
 
 <p class="govuk-body">Last updated: @DateTime.Now.ToString("HH:mm:ss")</p>

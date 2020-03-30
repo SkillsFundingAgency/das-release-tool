@@ -29,7 +29,7 @@
     var timer = setInterval(function () {
         var htmlResponse = refreshStatus();
         console.log(htmlResponse)
-        if (htmlResponse.trim().includes("Status: Succeeded")) {
+        if (htmlResponse.trim().includes("@VstsReleaseStatus.Succeeded.GetDescription()")) {
             clearInterval(timer);
         }
     }, 3000);
