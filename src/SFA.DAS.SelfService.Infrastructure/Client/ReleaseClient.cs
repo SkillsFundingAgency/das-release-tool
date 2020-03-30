@@ -71,7 +71,7 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
 
             List<Deployment> deployments = releaseClient.GetDeploymentsAsync(project: _configuration.Value.ProjectName, definitionId: releaseDefinitionId, top: 5).Result;
 
-            var deployment = deployments.Single(r => r.Id == releaseId);
+            var deployment = deployments.Single(r => r.Release.Id == releaseId);
 
             VstsReleaseStatus vstsReleaseStatus = (VstsReleaseStatus)deployment.DeploymentStatus;
 
