@@ -47,10 +47,6 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 return new BadRequestResult();
             }
 
-            var claimName = GetClaimName(this.Request.HttpContext.User.Claims);
-
-            whitelistViewModel.UserId = claimName;
-
             var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseName);
 
             if (whiteListDefinition == null)
@@ -61,11 +57,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             _logger.LogInformation($"Creating release: {whiteListDefinition.ReleaseName}");
 
-            var overrideParameters = new Dictionary<string, string>()
-            {
-                { WhitelistConstants.IpAddressOverrideKey, whitelistViewModel.IpAddress },
-                { WhitelistConstants.UserIdOverrideKey, whitelistViewModel.UserId }
-            };
+            var overrideParameters = SetupOverrideVariables(whitelistViewModel.IpAddress, this.Request.HttpContext.User.Claims);
 
             var release = _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
 
@@ -92,17 +84,32 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
             return PartialView("ReleaseCreatedPartial", whitelistViewModel);
         }
 
-        public string GetClaimName(IEnumerable<Claim> claims)
+        private Dictionary<string, string> SetupOverrideVariables(string ipAddress, IEnumerable<Claim> claims)
         {
-            var claimName = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
+            var userId = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
 
-            if (String.IsNullOrEmpty(claimName))
+            if (String.IsNullOrEmpty(userId))
             {
-                _logger.LogError("Cannot find valid claim name to start whitelist");
+                _logger.LogError("Cannot find a valid userId to start whitelist");
                 throw new UnauthorizedAccessException();
             }
 
-            return claimName;
+            var nickname = claims.Where(x => x.Type.Contains("nickname")).FirstOrDefault().Value;
+
+            if (String.IsNullOrEmpty(nickname))
+            {
+                _logger.LogError("Cannot find a valid nickname to start whitelist");
+                throw new UnauthorizedAccessException();
+            }
+
+            var overrideParameters = new Dictionary<string, string>()
+            {
+                { WhitelistConstants.IpAddressOverrideKey, ipAddress},
+                { WhitelistConstants.UserIdOverrideKey, userId},
+                { WhitelistConstants.NameOverrideKey, nickname}
+            };
+
+            return overrideParameters;
         }
     }
 }
