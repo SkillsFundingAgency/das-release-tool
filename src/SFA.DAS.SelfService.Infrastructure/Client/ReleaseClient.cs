@@ -10,6 +10,7 @@ using SFA.DAS.SelfService.Core.IReleases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Infrastructure.Releases
 {
@@ -34,11 +35,11 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
             return connection;
         }
 
-        public List<VstsReleaseDefinition> GetReleases()
+        public async Task<List<VstsReleaseDefinition>> GetReleasesAsync()
         {
             var client = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            var releases = client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, expand: ReleaseDefinitionExpands.Variables).Result;
+            var releases = await client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, expand: ReleaseDefinitionExpands.Variables);
 
             var vstsReleases = releases
                 .Select(r => new VstsReleaseDefinition
@@ -50,26 +51,11 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
             return vstsReleases;
         }
 
-        public VstsReleaseDefinition GetRelease(string releaseName)
+        public async Task<VstsReleaseDefinition> GetReleaseAsync(int releaseDefinitionId)
         {
             var client = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            var release = client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, releaseName, expand: ReleaseDefinitionExpands.Variables).Result.FirstOrDefault();
-
-            var vstsRelease = new VstsReleaseDefinition
-            {
-                Id = release.Id,
-                ReleaseName = release.Name
-            };
-
-            return vstsRelease;
-        }
-
-        public VstsReleaseDefinition GetRelease(int releaseDefinitionId)
-        {
-            var client = _vssConnection.GetClient<ReleaseHttpClient>();
-
-            var release = client.GetReleaseDefinitionAsync(_configuration.Value.ProjectName, releaseDefinitionId).Result;
+            var release = await client.GetReleaseDefinitionAsync(_configuration.Value.ProjectName, releaseDefinitionId);
 
             var vstsRelease = new VstsReleaseDefinition
             {

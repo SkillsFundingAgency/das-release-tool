@@ -47,19 +47,19 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 return new BadRequestResult();
             }
 
-            var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseDefinitionId);
+            var whiteListDefinition = _releaseService.GetReleaseAsync(WhitelistConstants.ReleaseDefinitionId);
 
             if (whiteListDefinition == null)
             {
-                _logger.LogError($"Release {WhitelistConstants.ReleaseName} not found!");
+                _logger.LogError($"Release with Id {WhitelistConstants.ReleaseDefinitionId} not found!");
                 return new NotFoundResult();
             }
 
-            _logger.LogInformation($"Creating release: {whiteListDefinition.ReleaseName}");
+            _logger.LogInformation($"Creating release: {whiteListDefinition.Result.ReleaseName}");
 
             var overrideParameters = SetupOverrideVariables(whitelistViewModel.IpAddress, this.Request.HttpContext.User.Claims);
 
-            var release = _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
+            var release = _releaseService.CreateRelease(whiteListDefinition.Result.Id, overrideParameters);
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
 

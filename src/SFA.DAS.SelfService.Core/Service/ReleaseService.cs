@@ -2,6 +2,7 @@ using SFA.DAS.SelfService.Core.Entities;
 using SFA.DAS.SelfService.Core.IReleases;
 using SFA.DAS.SelfService.Core.IServices;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Core.Services
 {
@@ -14,23 +15,16 @@ namespace SFA.DAS.SelfService.Core.Services
             releaseClient = _releaseClient;
         }
 
-        public List<VstsReleaseDefinition> GetReleases()
+        public Task<List<VstsReleaseDefinition>> GetReleasesAsync()
         {
-            var releases = releaseClient.GetReleases();
+            var releases = releaseClient.GetReleasesAsync();
 
             return releases;
         }
 
-        public VstsReleaseDefinition GetRelease(string releaseName)
+        public Task<VstsReleaseDefinition> GetReleaseAsync(int releaseDefinitionId)
         {
-            var release = releaseClient.GetRelease(releaseName);
-
-            return release;
-        }
-
-        public VstsReleaseDefinition GetRelease(int releaseDefinitionId)
-        {
-            var release = releaseClient.GetRelease(releaseDefinitionId);
+            var release = releaseClient.GetReleaseAsync(releaseDefinitionId);
 
             return release;
         }
