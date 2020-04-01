@@ -3,22 +3,22 @@
     @model WhitelistReleaseViewModel
 }
 
-    <table class="govuk-table">
-        <tbody class="govuk-table__body">
-        <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Resource</th>
-                <th scope="col" class="govuk-table__header">Status</th>
-            </tr>
-        </thead>
-        @foreach (var status in Model.deploymentStatus)
-        {
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@status.Name</td>
-                <td class="govuk-table__cell">@status.ReleaseStatus.GetDescription()</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+<table class="govuk-table">
+    <tbody class="govuk-table__body">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Resource</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+        </tr>
+    </thead>
+    @foreach (var status in Model.deploymentStatus)
+    {
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@status.Name</td>
+            <td class="govuk-table__cell">@status.ReleaseStatus.GetDescription()</td>
+        </tr>
+    }
+    </tbody>
+</table>
 
 <p class="govuk-body">Last updated: @DateTime.Now.ToString("HH:mm:ss") - the status will refresh every 3 seconds</p>
