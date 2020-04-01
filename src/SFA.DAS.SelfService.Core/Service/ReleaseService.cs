@@ -2,6 +2,7 @@ using SFA.DAS.SelfService.Core.Entities;
 using SFA.DAS.SelfService.Core.IReleases;
 using SFA.DAS.SelfService.Core.IServices;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Core.Services
 {
@@ -14,39 +15,29 @@ namespace SFA.DAS.SelfService.Core.Services
             releaseClient = _releaseClient;
         }
 
-        public List<VstsReleaseDefinition> GetReleases()
+        public async Task<List<VstsReleaseDefinition>> GetReleases()
         {
-            var releases = releaseClient.GetReleases();
-
-            return releases;
+            return await releaseClient.GetReleases();
         }
 
-        public VstsReleaseDefinition GetRelease(string releaseName)
+        public async Task<VstsReleaseDefinition> GetRelease(string releaseName)
         {
-            var release = releaseClient.GetRelease(releaseName);
-
-            return release;
+            return await releaseClient.GetRelease(releaseName);
         }
 
-        public VstsRelease CreateRelease(int releaseId, Dictionary<string, string> overrideParameters)
+        public async Task<VstsRelease> CreateRelease(int releaseId, Dictionary<string, string> overrideParameters)
         {
-            var release = releaseClient.CreateRelease(releaseId, overrideParameters);
-
-            return release;
+            return await releaseClient.CreateRelease(releaseId, overrideParameters);
         }
 
-        public VstsRelease CreateRelease(int releaseId)
+        public async Task<VstsRelease> CreateRelease(int releaseId)
         {
-            var release = releaseClient.CreateRelease(releaseId);
-
-            return release;
+            return await releaseClient.CreateRelease(releaseId);
         }
 
-        public VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId)
+        public async Task<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
-            var releaseStatus = releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
-
-            return releaseStatus;
+            return await releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
         }
     }
 }

@@ -1,18 +1,19 @@
 using SFA.DAS.SelfService.Core.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Core.IServices
 {
     public interface IReleaseService
     {
-        List<VstsReleaseDefinition> GetReleases();
+        Task<List<VstsReleaseDefinition>> GetReleases();
 
-        VstsReleaseDefinition GetRelease(string releaseName);
+        Task<VstsReleaseDefinition> GetRelease(string releaseName);
 
-        VstsRelease CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
+        Task<VstsRelease> CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
 
-        VstsRelease CreateRelease(int releaseDefinitionId);
+        Task<VstsRelease> CreateRelease(int releaseDefinitionId);
 
-        VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId);
+        Task<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId);
     }
 }

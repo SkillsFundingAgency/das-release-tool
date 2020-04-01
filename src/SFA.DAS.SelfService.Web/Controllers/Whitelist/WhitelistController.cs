@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 {
@@ -34,7 +35,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
         }
 
         [HttpPost("start", Name = WhitelistRouteNames.CreateRelease)]
-        public IActionResult StartRelease(WhitelistViewModel whitelistViewModel)
+        public async Task<IActionResult> StartRelease(WhitelistViewModel whitelistViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -51,7 +52,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             whitelistViewModel.UserId = claimName;
 
-            var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseName);
+            var whiteListDefinition = await _releaseService.GetRelease(WhitelistConstants.ReleaseName);
 
             if (whiteListDefinition == null)
             {
@@ -67,7 +68,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 { WhitelistConstants.UserIdOverrideKey, whitelistViewModel.UserId }
             };
 
-            var release = _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
+            var release = await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
 
@@ -81,18 +82,18 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
         }
 
         [HttpGet("releasestatus", Name = WhitelistRouteNames.ReleaseRefresh)]
-        public IActionResult ReleaseRefresh()
+        public async Task<IActionResult> ReleaseRefresh()
         {
             var releaseIds = TempData.Peek<WhitelistReleaseViewModel>("model");
 
-            var deploymentStatus = _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
+            var deploymentStatus = await _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
 
             var whitelistViewModel = new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
 
             return PartialView("ReleaseCreatedPartial", whitelistViewModel);
         }
 
-        public string GetClaimName(IEnumerable<Claim> claims)
+        private string GetClaimName(IEnumerable<Claim> claims)
         {
             var claimName = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
 

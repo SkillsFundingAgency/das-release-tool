@@ -10,6 +10,7 @@ using SFA.DAS.SelfService.Core.IReleases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Infrastructure.Releases
 {
@@ -29,56 +30,47 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
         {
             VssCredentials creds = new VssBasicCredential(string.Empty, _configuration.Value.PatToken);
 
-            VssConnection connection = new VssConnection(new Uri(_configuration.Value.CollectionUri), creds);
-
-            return connection;
+            return new VssConnection(new Uri(_configuration.Value.CollectionUri), creds);
         }
 
-        public List<VstsReleaseDefinition> GetReleases()
+        public async Task<List<VstsReleaseDefinition>> GetReleases()
         {
             var client = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            var releases = client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, expand: ReleaseDefinitionExpands.Variables).Result;
+            var releases = await client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, expand: ReleaseDefinitionExpands.Variables);
 
-            var vstsReleases = releases
+            return releases
                 .Select(r => new VstsReleaseDefinition
                 {
                     Id = r.Id,
                     ReleaseName = r.Name
                 }).ToList();
-
-            return vstsReleases;
         }
 
-        public VstsReleaseDefinition GetRelease(string releaseName)
+        public async Task<VstsReleaseDefinition> GetRelease(string releaseName)
         {
             var client = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            var release = client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, releaseName, expand: ReleaseDefinitionExpands.Variables).Result.FirstOrDefault();
-
-            var vstsRelease = new VstsReleaseDefinition
+            var release = (await client.GetReleaseDefinitionsAsync(_configuration.Value.ProjectName, releaseName, expand: ReleaseDefinitionExpands.Variables)).FirstOrDefault();
+            return new VstsReleaseDefinition
             {
                 Id = release.Id,
                 ReleaseName = release.Name
             };
-
-            return vstsRelease;
         }
 
-        public VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId)
+        public async Task<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
             ReleaseHttpClient releaseClient = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            List<Deployment> deployments = releaseClient.GetDeploymentsAsync(project: _configuration.Value.ProjectName, definitionId: releaseDefinitionId, top: 5).Result;
+            List<Deployment> deployments = await releaseClient.GetDeploymentsAsync(project: _configuration.Value.ProjectName, definitionId: releaseDefinitionId, top: 5);
 
             var deployment = deployments.Single(r => r.Release.Id == releaseId);
 
-            VstsReleaseStatus vstsReleaseStatus = (VstsReleaseStatus)deployment.DeploymentStatus;
-
-            return vstsReleaseStatus;
+            return (VstsReleaseStatus)deployment.DeploymentStatus;
         }
 
-        public VstsRelease CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters)
+        public async Task<VstsRelease> CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters)
         {
             ReleaseHttpClient releaseClient = _vssConnection.GetClient<ReleaseHttpClient>();
 
@@ -92,21 +84,17 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
                 overRideReleaseLevelVariables.Add(overrideParameter.Key, overrideVaraible);
             }
 
-            var release = CreateRelease(releaseClient, releaseDefinitionId, _configuration.Value.ProjectName, overRideReleaseLevelVariables);
-
-            return release;
+            return await CreateRelease(releaseClient, releaseDefinitionId, _configuration.Value.ProjectName, overRideReleaseLevelVariables);
         }
 
-        public VstsRelease CreateRelease(int releaseDefinitionId)
+        public async Task<VstsRelease> CreateRelease(int releaseDefinitionId)
         {
             ReleaseHttpClient releaseClient = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            var release = CreateRelease(releaseClient, releaseDefinitionId, _configuration.Value.ProjectName);
-
-            return release;
+            return await CreateRelease(releaseClient, releaseDefinitionId, _configuration.Value.ProjectName);
         }
 
-        public static VstsRelease CreateRelease(ReleaseHttpClient releaseClient, int releaseDefinitionId, string projectName, Dictionary<string, ConfigurationVariableValue> overrideVaraibles = null)
+        public async Task<VstsRelease> CreateRelease(ReleaseHttpClient releaseClient, int releaseDefinitionId, string projectName, Dictionary<string, ConfigurationVariableValue> overrideVaraibles = null)
         {
             ReleaseStartMetadata releaseStartMetaData = new ReleaseStartMetadata();
             releaseStartMetaData.DefinitionId = releaseDefinitionId;
@@ -120,17 +108,15 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
             }
 
             // Create  a release
-            var release =
-                releaseClient.CreateReleaseAsync(project: projectName, releaseStartMetadata: releaseStartMetaData).Result;
+            var release = await
+                releaseClient.CreateReleaseAsync(project: projectName, releaseStartMetadata: releaseStartMetaData);
 
-            var vstsRelease = new VstsRelease
+            return new VstsRelease
             {
                 Id = release.Id,
                 ReleaseName = release.Name,
                 ReleaseDefininitionId = release.ReleaseDefinitionReference.Id
             };
-
-            return vstsRelease;
         }
     }
 }
