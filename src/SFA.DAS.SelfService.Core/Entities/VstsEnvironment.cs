@@ -8,6 +8,7 @@
         //The Id for the environment specific to a created Release
         public int EnvironmentReleaseId { get; set; }
 
+        //The name of the the VstsEnvironment
         public string Name { get; set; }
     }
 }
