@@ -6,16 +6,16 @@ namespace SFA.DAS.SelfService.Core.IReleases
 {
     public interface IReleaseClient
     {
-        Task<List<VstsReleaseDefinition>> GetReleasesAsync();
+        Task<List<VstsReleaseDefinition>> GetReleases();
 
-        Task<VstsReleaseDefinition> GetReleaseAsync(int releaseDefinitionId);
+        Task<VstsReleaseDefinition> GetRelease(int releaseDefinitionId);
 
-        VstsRelease CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
+        Task<VstsRelease> CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
 
-        VstsRelease CreateRelease(int releaseDefinitionId);
+        Task<VstsRelease> CreateRelease(int releaseDefinitionId);
 
-        IList<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId);
+        Task<IList<VstsReleaseStatus>> CheckReleaseStatus(int releaseDefinitionId, int releaseId);
 
-        void StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId);
+        Task StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId);
     }
 }

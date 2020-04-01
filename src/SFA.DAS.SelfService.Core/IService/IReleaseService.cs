@@ -10,12 +10,12 @@ namespace SFA.DAS.SelfService.Core.IServices
 
         Task<VstsReleaseDefinition> GetReleaseAsync(int releaseDefinitionId);
 
-        VstsRelease CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
+        Task<VstsRelease> CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
 
-        VstsRelease CreateRelease(int releaseDefinitionId);
+        Task<VstsRelease> CreateRelease(int releaseDefinitionId);
 
-        IList<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId);
+        Task<IList<VstsReleaseStatus>> CheckReleaseStatus(int releaseDefinitionId, int releaseId);
 
-        void StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId);
+        Task StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId);
     }
 }

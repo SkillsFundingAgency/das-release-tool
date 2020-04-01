@@ -15,44 +15,35 @@ namespace SFA.DAS.SelfService.Core.Services
             releaseClient = _releaseClient;
         }
 
-        public Task<List<VstsReleaseDefinition>> GetReleasesAsync()
+        public async Task<List<VstsReleaseDefinition>> GetReleasesAsync()
         {
-            var releases = releaseClient.GetReleasesAsync();
-
-            return releases;
+            return await releaseClient.GetReleases(); ;
         }
 
-        public Task<VstsReleaseDefinition> GetReleaseAsync(int releaseDefinitionId)
+        public async Task<VstsReleaseDefinition> GetReleaseAsync(int releaseDefinitionId)
         {
-            var release = releaseClient.GetReleaseAsync(releaseDefinitionId);
-
-            return release;
+            return await releaseClient.GetRelease(releaseDefinitionId);
         }
 
-        public VstsRelease CreateRelease(int releaseId, Dictionary<string, string> overrideParameters)
+        public async Task<VstsRelease> CreateRelease(int releaseId, Dictionary<string, string> overrideParameters)
         {
-            var release = releaseClient.CreateRelease(releaseId, overrideParameters);
-
-            return release;
+            return await releaseClient.CreateRelease(releaseId, overrideParameters);
         }
 
-        public VstsRelease CreateRelease(int releaseId)
+        public async Task<VstsRelease> CreateRelease(int releaseId)
         {
-            var release = releaseClient.CreateRelease(releaseId);
-
-            return release;
+            return await releaseClient.CreateRelease(releaseId);
         }
 
-        public IList<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
+        public async Task<IList<VstsReleaseStatus>> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
-            var releaseStatus = releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
 
-            return releaseStatus;
+            return await releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
         }
 
-        public void StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId)
+        public async Task StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId)
         {
-            releaseClient.StartEnvironmentDeployment(vstsRelease, releaseEnvironmentId);
+             await releaseClient.StartEnvironmentDeployment(vstsRelease, releaseEnvironmentId);
         }
     }
 }

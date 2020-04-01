@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 {
@@ -34,7 +35,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
         }
 
         [HttpPost("start", Name = WhitelistRouteNames.CreateRelease)]
-        public IActionResult StartRelease(WhitelistViewModel whitelistViewModel)
+        public async Task<IActionResult> StartRelease(WhitelistViewModel whitelistViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -47,7 +48,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 return new BadRequestResult();
             }
 
-            var whiteListDefinition = _releaseService.GetReleaseAsync(WhitelistConstants.ReleaseDefinitionId);
+            var whiteListDefinition = await _releaseService.GetReleaseAsync(WhitelistConstants.ReleaseDefinitionId);
 
             if (whiteListDefinition == null)
             {
@@ -55,11 +56,11 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 return new NotFoundResult();
             }
 
-            _logger.LogInformation($"Creating release: {whiteListDefinition.Result.ReleaseName}");
+            _logger.LogInformation($"Creating release: {whiteListDefinition.ReleaseName}");
 
             var overrideParameters = SetupOverrideVariables(whitelistViewModel.IpAddress, this.Request.HttpContext.User.Claims);
 
-            var release = _releaseService.CreateRelease(whiteListDefinition.Result.Id, overrideParameters);
+            var release =  await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
 
@@ -67,33 +68,33 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
             {
                 var environmentId = release.ReleaseEnvironments.Single(x => x.DefinitionId == environmentDefinitionId).EnvironmentReleaseId;
 
-                _releaseService.StartEnvironmentDeployment(release, environmentId);
+                await _releaseService.StartEnvironmentDeployment(release, environmentId);
             }
 
             return RedirectToAction(WhitelistRouteNames.ReleaseCreated);
         }
 
         [HttpGet("releaseStarted", Name = WhitelistRouteNames.ReleaseCreated)]
-        public IActionResult ReleaseCreated()
+        public async Task<IActionResult> ReleaseCreated()
         {
-            var whitelistViewModel = GetDeploymentStatus();
+            var whitelistViewModel = await GetDeploymentStatus();
 
             return View(whitelistViewModel);
         }
 
         [HttpGet("releaseStatus", Name = WhitelistRouteNames.ReleaseRefresh)]
-        public IActionResult ReleaseRefresh()
+        public async Task<IActionResult> ReleaseRefresh()
         {
-            var whitelistViewModel = GetDeploymentStatus();
+            var whitelistViewModel = await GetDeploymentStatus();
 
             return PartialView("ReleaseCreatedPartial", whitelistViewModel);
         }
 
-        private WhitelistReleaseViewModel GetDeploymentStatus()
+        private async Task<WhitelistReleaseViewModel> GetDeploymentStatus()
         {
             var releaseIds = TempData.Peek<WhitelistReleaseViewModel>("model");
 
-            var deploymentStatus = _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
+            var deploymentStatus = await _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
 
             return new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
         }
