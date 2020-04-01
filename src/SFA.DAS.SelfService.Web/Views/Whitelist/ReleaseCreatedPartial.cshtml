@@ -1,6 +1,8 @@
 @{
     ViewData["Title"] = "WhitelistPartial";
     @model WhitelistReleaseViewModel
+
+    var whitelistRunning = Model.deploymentStatus.Any(x => x.ReleaseStatus == VstsReleaseStatus.Status.InProgress || x.ReleaseStatus == VstsReleaseStatus.Status.NotDeployed);
 }
 
 <table class="govuk-table">
@@ -21,4 +23,13 @@
     </tbody>
 </table>
 
-<p class="govuk-body">Last updated: @DateTime.Now.ToString("HH:mm:ss") - the status will refresh every 3 seconds</p>
+@if (whitelistRunning)
+{
+    <p class="govuk-body">Last updated: @DateTime.Now.ToString("HH:mm:ss") - the status will refresh every 3 seconds</p>
+}
+else
+{
+    <p class="govuk-body">
+        Whitelisting complete you can now logout or return to the <a href="/" class="govuk-link">Tool Service</a>
+    </p>
+}
