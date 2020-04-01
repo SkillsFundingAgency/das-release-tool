@@ -18,7 +18,7 @@ namespace SFA.DAS.SelfService.Core.Entities
             [Description("Complete")]
             Succeeded = 4,
 
-            [Description("Complete")]
+            [Description("Error")]
             PartiallySucceeded = 8,
 
             Failed = 16,
