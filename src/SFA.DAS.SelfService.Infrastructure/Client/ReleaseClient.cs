@@ -65,15 +65,30 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
             return vstsRelease;
         }
 
-        public VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId)
+        public VstsReleaseDefinition GetRelease(int releaseDefinitionId)
+        {
+            var client = _vssConnection.GetClient<ReleaseHttpClient>();
+
+            var release = client.GetReleaseDefinitionAsync(_configuration.Value.ProjectName, releaseDefinitionId).Result;
+
+            var vstsRelease = new VstsReleaseDefinition
+            {
+                Id = release.Id,
+                ReleaseName = release.Name
+            };
+
+            return vstsRelease;
+        }
+
+        public IList<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
             ReleaseHttpClient releaseClient = _vssConnection.GetClient<ReleaseHttpClient>();
 
-            List<Deployment> deployments = releaseClient.GetDeploymentsAsync(project: _configuration.Value.ProjectName, definitionId: releaseDefinitionId, top: 5).Result;
+            List<Deployment> deployments = releaseClient.GetDeploymentsAsync(project: _configuration.Value.ProjectName, definitionId: releaseDefinitionId, top: 25).Result;
 
-            var deployment = deployments.Single(r => r.Release.Id == releaseId);
+            var deployment = deployments.Where(r => r.Release.Id == releaseId).OrderBy(x => x.ReleaseEnvironmentReference.Id).ToList();
 
-            VstsReleaseStatus vstsReleaseStatus = (VstsReleaseStatus)deployment.DeploymentStatus;
+            List<VstsReleaseStatus> vstsReleaseStatus = deployment.Select(x => new VstsReleaseStatus { Name = x.ReleaseEnvironmentReference.Name, ReleaseStatus = (VstsReleaseStatus.Status)x.DeploymentStatus }).ToList();
 
             return vstsReleaseStatus;
         }
@@ -127,10 +142,23 @@ namespace SFA.DAS.SelfService.Infrastructure.Releases
             {
                 Id = release.Id,
                 ReleaseName = release.Name,
-                ReleaseDefininitionId = release.ReleaseDefinitionReference.Id
+                ReleaseDefininitionId = release.ReleaseDefinitionReference.Id,
+                ReleaseEnvironments = release.Environments.Select(x => new VstsEnvironment { DefinitionId = x.DefinitionEnvironmentId, EnvironmentReleaseId = x.Id, Name = x.Name }).ToList()
             };
 
             return vstsRelease;
+        }
+
+        public void StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId)
+        {
+            ReleaseHttpClient releaseClient = _vssConnection.GetClient<ReleaseHttpClient>();
+
+            ReleaseEnvironmentUpdateMetadata releaseEnvironmentUpdateMetadata = new ReleaseEnvironmentUpdateMetadata()
+            {
+                Status = EnvironmentStatus.InProgress
+            };
+
+            ReleaseEnvironment releaseEnvironment = releaseClient.UpdateReleaseEnvironmentAsync(releaseEnvironmentUpdateMetadata, _configuration.Value.ProjectName, vstsRelease.Id, releaseEnvironmentId).Result;
         }
     }
 }

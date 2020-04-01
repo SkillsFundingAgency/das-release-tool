@@ -28,6 +28,13 @@ namespace SFA.DAS.SelfService.Core.Services
             return release;
         }
 
+        public VstsReleaseDefinition GetRelease(int releaseDefinitionId)
+        {
+            var release = releaseClient.GetRelease(releaseDefinitionId);
+
+            return release;
+        }
+
         public VstsRelease CreateRelease(int releaseId, Dictionary<string, string> overrideParameters)
         {
             var release = releaseClient.CreateRelease(releaseId, overrideParameters);
@@ -42,11 +49,16 @@ namespace SFA.DAS.SelfService.Core.Services
             return release;
         }
 
-        public VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId)
+        public IList<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
             var releaseStatus = releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
 
             return releaseStatus;
+        }
+
+        public void StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId)
+        {
+            releaseClient.StartEnvironmentDeployment(vstsRelease, releaseEnvironmentId);
         }
     }
 }

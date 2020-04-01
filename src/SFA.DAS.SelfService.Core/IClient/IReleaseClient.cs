@@ -9,10 +9,14 @@ namespace SFA.DAS.SelfService.Core.IReleases
 
         VstsReleaseDefinition GetRelease(string releaseName);
 
+        VstsReleaseDefinition GetRelease(int releaseDefinitionId);
+
         VstsRelease CreateRelease(int releaseDefinitionId, Dictionary<string, string> overrideParameters);
 
         VstsRelease CreateRelease(int releaseDefinitionId);
 
-        VstsReleaseStatus CheckReleaseStatus(int releaseDefinitionId, int releaseId);
+        IList<VstsReleaseStatus> CheckReleaseStatus(int releaseDefinitionId, int releaseId);
+
+        void StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId);
     }
 }

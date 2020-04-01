@@ -47,7 +47,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 return new BadRequestResult();
             }
 
-            var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseName);
+            var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseDefinitionId);
 
             if (whiteListDefinition == null)
             {
@@ -63,25 +63,39 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
 
+            foreach (var environmentDefinitionId in whitelistViewModel.SelectedEnvironmentIds)
+            {
+                var environmentId = release.ReleaseEnvironments.Single(x => x.DefinitionId == environmentDefinitionId).EnvironmentReleaseId;
+
+                _releaseService.StartEnvironmentDeployment(release, environmentId);
+            }
+
             return RedirectToAction(WhitelistRouteNames.ReleaseCreated);
         }
 
         [HttpGet("releaseStarted", Name = WhitelistRouteNames.ReleaseCreated)]
         public IActionResult ReleaseCreated()
         {
-            return View(new WhitelistReleaseViewModel());
+            var whitelistViewModel = GetDeploymentStatus();
+
+            return View(whitelistViewModel);
         }
 
-        [HttpGet("releasestatus", Name = WhitelistRouteNames.ReleaseRefresh)]
+        [HttpGet("releaseStatus", Name = WhitelistRouteNames.ReleaseRefresh)]
         public IActionResult ReleaseRefresh()
+        {
+            var whitelistViewModel = GetDeploymentStatus();
+
+            return PartialView("ReleaseCreatedPartial", whitelistViewModel);
+        }
+
+        private WhitelistReleaseViewModel GetDeploymentStatus()
         {
             var releaseIds = TempData.Peek<WhitelistReleaseViewModel>("model");
 
             var deploymentStatus = _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
 
-            var whitelistViewModel = new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
-
-            return PartialView("ReleaseCreatedPartial", whitelistViewModel);
+            return new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
         }
 
         private Dictionary<string, string> SetupOverrideVariables(string ipAddress, IEnumerable<Claim> claims)

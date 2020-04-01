@@ -3,15 +3,9 @@
     @model WhitelistReleaseViewModel
     @using SFA.DAS.SelfService.Web.Configuration
 }
-
-<h1></h1>
-
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Whitelist Started</h1>
-    </div>
-    <div class="govuk-grid-column-two-thirds">
-        <h2 class="govuk-heading-m">(Status will refresh every 3 seconds below)</h2>
+        <h2 class="govuk-heading-l">Whitelist Status</h2>
     </div>
     <div class="govuk-grid-column-two-thirds" id="myPartialView">
         <partial name="ReleaseCreatedPartial" model="Model" />
@@ -29,7 +23,7 @@
     var timer = setInterval(function () {
         var htmlResponse = refreshStatus();
         console.log(htmlResponse)
-        if (htmlResponse.trim().includes("@VstsReleaseStatus.Succeeded.GetDescription()")) {
+        if (!htmlResponse.trim().includes("@VstsReleaseStatus.Status.InProgress.GetDescription()") && !htmlResponse.trim().includes("@VstsReleaseStatus.Status.NotDeployed.GetDescription()")) {
             clearInterval(timer);
         }
     }, 3000);
