@@ -102,7 +102,7 @@
 
 <script type="text/javascript">
     window.onload = function () {
-        fetch('https://jsonip.com', { mode: 'cors' })
+        fetch('https://ipv4.jsonip.com', { mode: 'cors' })
             .then((resp) => resp.json())
             .then((ip) => {
                 document.getElementById("ipAddress").value = ip.ip;
