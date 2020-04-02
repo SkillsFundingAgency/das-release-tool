@@ -2,24 +2,31 @@
 
 namespace SFA.DAS.SelfService.Core.Entities
 {
-    public enum VstsReleaseStatus
+    public class VstsReleaseStatus
     {
-        [Description("Fetching Status")]
-        Undefined = 0,
+        public enum Status
+        {
+            [Description("Fetching Status")]
+            Undefined = 0,
 
-        [Description("Queued")]
-        NotDeployed = 1,
+            [Description("Queued")]
+            NotDeployed = 1,
 
-        [Description("In Progress")]
-        InProgress = 2,
+            [Description("In Progress")]
+            InProgress = 2,
 
-        [Description("Whitelisted")]
-        Succeeded = 4,
+            [Description("Complete")]
+            Succeeded = 4,
 
-        [Description("Whitelisted")]
-        PartiallySucceeded = 8,
+            [Description("Error")]
+            PartiallySucceeded = 8,
 
-        Failed = 16,
-        All = 31
+            Failed = 16,
+            All = 31
+        }
+
+        public Status ReleaseStatus { get; set; }
+
+        public string Name { get; set; }
     }
 }

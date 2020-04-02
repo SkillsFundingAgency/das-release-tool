@@ -1,8 +1,35 @@
 @{
     ViewData["Title"] = "WhitelistPartial";
     @model WhitelistReleaseViewModel
+
+    var whitelistRunning = Model.deploymentStatus.Any(x => x.ReleaseStatus == VstsReleaseStatus.Status.InProgress || x.ReleaseStatus == VstsReleaseStatus.Status.NotDeployed);
 }
 
-<p class="govuk-body govuk-!-font-weight-bold">Status: @Model.deploymentStatus.GetDescription()</p>
+<table class="govuk-table">
+    <tbody class="govuk-table__body">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">Resource</th>
+            <th scope="col" class="govuk-table__header">Status</th>
+        </tr>
+    </thead>
+    @foreach (var status in Model.deploymentStatus)
+    {
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@status.Name</td>
+            <td class="govuk-table__cell">@status.ReleaseStatus.GetDescription()</td>
+        </tr>
+    }
+    </tbody>
+</table>
 
-<p class="govuk-body">Last updated: @DateTime.Now.ToString("HH:mm:ss")</p>
+@if (whitelistRunning)
+{
+    <p class="govuk-body">Last updated: @DateTime.Now.ToString("HH:mm:ss") - the status will refresh every 3 seconds</p>
+}
+else
+{
+    <p class="govuk-body">
+        Whitelisting complete you can now <a class="govuk-link" href="@Url.Content("/account/logout")">logout</a> or return to the <a href="/" class="govuk-link">Tool Service</a>
+</p>
+}

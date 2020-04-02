@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 {
@@ -34,7 +35,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
         }
 
         [HttpPost("start", Name = WhitelistRouteNames.CreateRelease)]
-        public IActionResult StartRelease(WhitelistViewModel whitelistViewModel)
+        public async Task<IActionResult> StartRelease(WhitelistViewModel whitelistViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -47,62 +48,83 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 return new BadRequestResult();
             }
 
-            var claimName = GetClaimName(this.Request.HttpContext.User.Claims);
-
-            whitelistViewModel.UserId = claimName;
-
-            var whiteListDefinition = _releaseService.GetRelease(WhitelistConstants.ReleaseName);
+            var whiteListDefinition = await _releaseService.GetReleaseAsync(WhitelistConstants.ReleaseDefinitionId);
 
             if (whiteListDefinition == null)
             {
-                _logger.LogError($"Release {WhitelistConstants.ReleaseName} not found!");
+                _logger.LogError($"Release with Id {WhitelistConstants.ReleaseDefinitionId} not found!");
                 return new NotFoundResult();
             }
 
             _logger.LogInformation($"Creating release: {whiteListDefinition.ReleaseName}");
 
-            var overrideParameters = new Dictionary<string, string>()
-            {
-                { WhitelistConstants.IpAddressOverrideKey, whitelistViewModel.IpAddress },
-                { WhitelistConstants.UserIdOverrideKey, whitelistViewModel.UserId }
-            };
+            var overrideParameters = SetupOverrideVariables(whitelistViewModel.IpAddress, this.Request.HttpContext.User.Claims);
 
-            var release = _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
+            var release =  await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
+
+            foreach (var environmentDefinitionId in whitelistViewModel.SelectedEnvironmentIds)
+            {
+                var environmentId = release.ReleaseEnvironments.Single(x => x.DefinitionId == environmentDefinitionId).EnvironmentReleaseId;
+
+                await _releaseService.StartEnvironmentDeployment(release, environmentId);
+            }
 
             return RedirectToAction(WhitelistRouteNames.ReleaseCreated);
         }
 
         [HttpGet("releaseStarted", Name = WhitelistRouteNames.ReleaseCreated)]
-        public IActionResult ReleaseCreated()
+        public async Task<IActionResult> ReleaseCreated()
         {
-            return View(new WhitelistReleaseViewModel());
+            var whitelistViewModel = await GetDeploymentStatus();
+
+            return View(whitelistViewModel);
         }
 
-        [HttpGet("releasestatus", Name = WhitelistRouteNames.ReleaseRefresh)]
-        public IActionResult ReleaseRefresh()
+        [HttpGet("releaseStatus", Name = WhitelistRouteNames.ReleaseRefresh)]
+        public async Task<IActionResult> ReleaseRefresh()
         {
-            var releaseIds = TempData.Peek<WhitelistReleaseViewModel>("model");
-
-            var deploymentStatus = _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
-
-            var whitelistViewModel = new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
+            var whitelistViewModel = await GetDeploymentStatus();
 
             return PartialView("ReleaseCreatedPartial", whitelistViewModel);
         }
 
-        public string GetClaimName(IEnumerable<Claim> claims)
+        private async Task<WhitelistReleaseViewModel> GetDeploymentStatus()
         {
-            var claimName = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
+            var releaseIds = TempData.Peek<WhitelistReleaseViewModel>("model");
 
-            if (String.IsNullOrEmpty(claimName))
+            var deploymentStatus = await _releaseService.CheckReleaseStatus(releaseIds.releaseDefinitionId, releaseIds.releaseId);
+
+            return new WhitelistReleaseViewModel() { deploymentStatus = deploymentStatus };
+        }
+
+        private Dictionary<string, string> SetupOverrideVariables(string ipAddress, IEnumerable<Claim> claims)
+        {
+            var userId = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
+
+            if (String.IsNullOrEmpty(userId))
             {
-                _logger.LogError("Cannot find valid claim name to start whitelist");
+                _logger.LogError("Cannot find a valid userId to start whitelist");
                 throw new UnauthorizedAccessException();
             }
 
-            return claimName;
+            var nickname = claims.Where(x => x.Type.Contains("nickname")).FirstOrDefault().Value;
+
+            if (String.IsNullOrEmpty(nickname))
+            {
+                _logger.LogError("Cannot find a valid nickname to start whitelist");
+                throw new UnauthorizedAccessException();
+            }
+
+            var overrideParameters = new Dictionary<string, string>()
+            {
+                { WhitelistConstants.IpAddressOverrideKey, ipAddress},
+                { WhitelistConstants.UserIdOverrideKey, userId},
+                { WhitelistConstants.NameOverrideKey, nickname}
+            };
+
+            return overrideParameters;
         }
     }
 }
