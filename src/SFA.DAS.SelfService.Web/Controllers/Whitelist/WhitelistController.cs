@@ -60,7 +60,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             var overrideParameters = SetupOverrideVariables(whitelistViewModel.IpAddress, this.Request.HttpContext.User.Claims);
 
-            var release =  await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
+            var release = await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
 
