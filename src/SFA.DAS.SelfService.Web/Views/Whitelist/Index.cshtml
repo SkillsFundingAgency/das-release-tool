@@ -30,7 +30,7 @@
                 <p class="govuk-body">DEV refers to AT, TEST, TEST2 &amp; DEMO.</p>
             </div>
         </details>
-        <form asp-route="@WhitelistRouteNames.CreateRelease" method="post">
+        <form asp-route="@WhitelistRouteNames.StartWhitelist" method="post">
             <div class="govuk-form-group @(environmentsInvalid ? "govuk-form-group--error" : "")">
                 <fieldset class="govuk-fieldset">
                     @if (environmentsInvalid)
