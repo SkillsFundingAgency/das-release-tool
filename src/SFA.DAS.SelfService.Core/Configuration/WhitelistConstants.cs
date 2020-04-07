@@ -2,10 +2,10 @@
 {
     public static class WhitelistConstants
     {
-        public const int ReleaseDefinitionId = 1;
-        public const int SQLServerEnvironmentId = 1;
-        public const int DevCosmosEnvironmentId = 2;
-        public const int PPCosmosEnvironmentId = 3;
+        public const int ReleaseDefinitionId = 24;
+        public const int SQLServerEnvironmentId = 61;
+        public const int DevCosmosEnvironmentId = 84;
+        public const int PPCosmosEnvironmentId = 85;
         public const string IpAddressOverrideKey = "IPAddress";
         public const string UserIdOverrideKey = "UserId";
         public const string NameOverrideKey = "Name";
