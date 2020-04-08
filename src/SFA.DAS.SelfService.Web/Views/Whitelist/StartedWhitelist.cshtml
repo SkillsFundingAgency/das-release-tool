@@ -8,7 +8,7 @@
         <h2 class="govuk-heading-l">Whitelist Status</h2>
     </div>
     <div class="govuk-grid-column-two-thirds" id="myPartialView">
-        <partial name="ReleaseCreatedPartial" model="Model" />
+        <partial name="StartedWhitelistPartial" model="Model" />
     </div>
 </div>
 
@@ -16,13 +16,12 @@
 
     function refreshStatus() {
 
-        $("#myPartialView").load('@Url.Action(WhitelistRouteNames.ReleaseRefresh)');
+        $("#myPartialView").load('@Url.Action(WhitelistRouteNames.RefreshWhitelist)');
         return $("#myPartialView").text()
     }
 
     var timer = setInterval(function () {
         var htmlResponse = refreshStatus();
-        console.log(htmlResponse)
         if (!htmlResponse.trim().includes("@VstsReleaseStatus.Status.InProgress.GetDescription()") && !htmlResponse.trim().includes("@VstsReleaseStatus.Status.NotDeployed.GetDescription()")) {
             clearInterval(timer);
         }

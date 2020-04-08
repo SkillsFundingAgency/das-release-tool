@@ -34,7 +34,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
             return View(whitelistViewModel);
         }
 
-        [HttpPost("start", Name = WhitelistRouteNames.CreateRelease)]
+        [HttpPost("start", Name = WhitelistRouteNames.StartWhitelist)]
         public async Task<IActionResult> StartRelease(WhitelistViewModel whitelistViewModel)
         {
             if (!ModelState.IsValid)
@@ -60,7 +60,7 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
             var overrideParameters = SetupOverrideVariables(whitelistViewModel.IpAddress, this.Request.HttpContext.User.Claims);
 
-            var release =  await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
+            var release = await _releaseService.CreateRelease(whiteListDefinition.Id, overrideParameters);
 
             TempData.Put("model", new { releaseId = release.Id, releaseDefinitionId = release.ReleaseDefininitionId });
 
@@ -71,23 +71,23 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
                 await _releaseService.StartEnvironmentDeployment(release, environmentId);
             }
 
-            return RedirectToAction(WhitelistRouteNames.ReleaseCreated);
+            return RedirectToAction(WhitelistRouteNames.StartedWhitelist);
         }
 
-        [HttpGet("releaseStarted", Name = WhitelistRouteNames.ReleaseCreated)]
-        public async Task<IActionResult> ReleaseCreated()
+        [HttpGet("StartedWhitelist", Name = WhitelistRouteNames.StartedWhitelist)]
+        public async Task<IActionResult> StartedWhitelist()
         {
             var whitelistViewModel = await GetDeploymentStatus();
 
             return View(whitelistViewModel);
         }
 
-        [HttpGet("releaseStatus", Name = WhitelistRouteNames.ReleaseRefresh)]
-        public async Task<IActionResult> ReleaseRefresh()
+        [HttpGet("whiteliststatus", Name = WhitelistRouteNames.RefreshWhitelist)]
+        public async Task<IActionResult> RefreshWhitelist()
         {
             var whitelistViewModel = await GetDeploymentStatus();
 
-            return PartialView("ReleaseCreatedPartial", whitelistViewModel);
+            return PartialView("StartedWhitelistPartial", whitelistViewModel);
         }
 
         private async Task<WhitelistReleaseViewModel> GetDeploymentStatus()

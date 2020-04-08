@@ -37,13 +37,12 @@ namespace SFA.DAS.SelfService.Core.Services
 
         public async Task<IList<VstsReleaseStatus>> CheckReleaseStatus(int releaseDefinitionId, int releaseId)
         {
-
             return await releaseClient.CheckReleaseStatus(releaseDefinitionId, releaseId);
         }
 
         public async Task StartEnvironmentDeployment(VstsRelease vstsRelease, int releaseEnvironmentId)
         {
-             await releaseClient.StartEnvironmentDeployment(vstsRelease, releaseEnvironmentId);
+            await releaseClient.StartEnvironmentDeployment(vstsRelease, releaseEnvironmentId);
         }
     }
 }

@@ -2,8 +2,8 @@
 {
     public class WhitelistRouteNames
     {
-        public const string CreateRelease = "CreateRelease";
-        public const string ReleaseCreated = "ReleaseCreated";
-        public const string ReleaseRefresh = "ReleaseRefresh";
+        public const string StartWhitelist = "StartWhitelist";
+        public const string StartedWhitelist = "StartedWhitelist";
+        public const string RefreshWhitelist = "RefreshWhitelist";
     }
 }
