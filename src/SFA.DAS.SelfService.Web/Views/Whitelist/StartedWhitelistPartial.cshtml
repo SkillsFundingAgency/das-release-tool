@@ -5,32 +5,41 @@
     var whitelistRunning = Model.deploymentStatus.Any(x => x.ReleaseStatus == VstsReleaseStatus.Status.InProgress || x.ReleaseStatus == VstsReleaseStatus.Status.NotDeployed);
 }
 
-<table class="govuk-table">
-    <tbody class="govuk-table__body">
-    <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-            <th scope="col" class="govuk-table__header">Resource</th>
-            <th scope="col" class="govuk-table__header">Status</th>
-        </tr>
-    </thead>
-    @foreach (var status in Model.deploymentStatus)
-    {
-        <tr class="govuk-table__row">
-            <td class="govuk-table__cell">@status.Name</td>
-            <td class="govuk-table__cell">@status.ReleaseStatus.GetDescription()</td>
-        </tr>
-    }
-    </tbody>
-</table>
-
 @if (whitelistRunning)
 {
+    <table class="govuk-table">
+        <tbody class="govuk-table__body">
+        <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Resource</th>
+                <th scope="col" class="govuk-table__header">Status</th>
+            </tr>
+        </thead>
+        @foreach (var status in Model.deploymentStatus)
+        {
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">@status.Name</td>
+                <td class="govuk-table__cell">@status.ReleaseStatus.GetDescription()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
     <p class="govuk-body">Last updated: <span id="statusDateTime"></span> - the status will refresh every 3 seconds</p>
 }
 else
 {
+    <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+            Whitelist Complete
+        </h1>
+        <div class="govuk-panel__body">
+            Your IP Address has been whitelisted.
+        </div>
+    </div>
+
     <p class="govuk-body">
-        Whitelisting complete you can now <a class="govuk-link" href="@Url.Content("/account/logout")">logout</a> or return to the <a href="/home" class="govuk-link">Tool Service</a>
+        You can now <a class="govuk-link" href="@Url.Content("/account/logout")">logout</a> or return to the <a href="/home" class="govuk-link">Tool Service</a>
     </p>
 }
 
