@@ -44,8 +44,6 @@ spec:
     spec:
       containers:
       - env:
-        - name: BaseUrl
-          value: {{IngressHost}}
         - name: VstsConfig__CollectionUri
           value: {{CollectionUri}}
         - name: VstsConfig__ProjectName
