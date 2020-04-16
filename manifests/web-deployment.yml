@@ -44,20 +44,8 @@ spec:
     spec:
       containers:
       - env:
-        - name: LoggingRedisConnectionString
-          value: {{LoggingRedisConnectionString}}
-        - name: LoggingRedisKey
-          value: logstash
-        - name: EnvironmentName
-          value: {{EnvironmentName}}
-        - name: APPINSIGHTS_INSTRUMENTATIONKEY
-          value: {{WebAppInsightsInstrumentationkey}}
-        - name: Cdn__Url
-          value: {{CdnUrl}}
         - name: BaseUrl
           value: {{IngressHost}}
-        - name: RedisConnectionString
-          value: {{RedisConnectionString}}
         - name: VstsConfig__CollectionUri
           value: {{CollectionUri}}
         - name: VstsConfig__ProjectName
@@ -66,7 +54,6 @@ spec:
           value: {{PatToken}}
         - name: VstsConfig__RequiredRole
           value: {{RequiredRole}}
-
         image: {{WebImage}}
         imagePullPolicy: IfNotPresent
         name: das-self-service
@@ -77,3 +64,11 @@ spec:
           requests:
             cpu: 25m
             memory: 512Mi
+        volumeMounts:
+          - mountPath: /app/appsettings.json
+            name: shared-app-settings
+            subPath: appsettings.json
+      volumes:
+        - name: shared-app-settings
+          configMap:
+            name: das-tool-service-shared-config
