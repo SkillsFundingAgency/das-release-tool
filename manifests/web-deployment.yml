@@ -6,7 +6,7 @@ metadata:
     app: das-self-service
     service: das-tool-service
   name: das-self-service
-  namespace: {{Namespace}}
+  namespace: {{KubernetesNamespace}}
 spec:
   ports:
   - port: 80
@@ -24,7 +24,7 @@ metadata:
     app: das-self-service
     service: das-tool-service
   name: das-self-service
-  namespace: {{Namespace}}
+  namespace: {{KubernetesNamespace}}
 spec:
   replicas: 1
   selector:
@@ -42,17 +42,19 @@ spec:
         app: das-self-service
         service: das-tool-service
     spec:
+      nodeSelector:
+        agentpool: tools01
       containers:
       - env:
         - name: VstsConfig__CollectionUri
-          value: {{CollectionUri}}
+          value: {{AzureDevopsOrganisationUrl}}
         - name: VstsConfig__ProjectName
-          value: {{ProjectName}}
+          value: {{AzureDevopsProjectName}}
         - name: VstsConfig__PatToken
-          value: {{PatToken}}
+          value: {{SelfServicePatToken}}
         - name: VstsConfig__RequiredRole
-          value: {{RequiredRole}}
-        image: {{WebImage}}
+          value: {{SelfServiceRequiredRole}}
+        image: apprenticeshipsdevops/das-self-service:{{buildNumber}}
         imagePullPolicy: IfNotPresent
         name: das-self-service
         ports:
@@ -65,6 +67,12 @@ spec:
         envFrom:
           - configMapRef:
               name: das-tool-service-shared-config
+        readinessProbe:
+          httpGet:
+            path: "/whitelist/health"
+            port: 80
+          periodSeconds: 10
+          timeoutSeconds: 1
       volumes:
         - name: shared-app-settings
           configMap:
