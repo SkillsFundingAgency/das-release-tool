@@ -25,5 +25,5 @@
         if (!htmlResponse.trim().includes("@VstsReleaseStatus.Status.InProgress.GetDescription()") && !htmlResponse.trim().includes("@VstsReleaseStatus.Status.NotDeployed.GetDescription()")) {
             clearInterval(timer);
         }
-    }, 3000);
+    }, 10000);
 </script>
