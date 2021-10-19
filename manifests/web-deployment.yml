@@ -54,7 +54,7 @@ spec:
           value: {{SelfServicePatToken}}
         - name: VstsConfig__RequiredRole
           value: {{SelfServiceRequiredRole}}
-        image: apprenticeshipsdevops/das-self-service:{{buildNumber}}
+        image: {{PublicAcrName}}.azurecr.io/{{ContainerImageName}}:{{BuildNumber}}
         imagePullPolicy: IfNotPresent
         name: das-self-service
         ports:
