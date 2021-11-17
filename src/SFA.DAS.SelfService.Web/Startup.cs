@@ -67,7 +67,7 @@ namespace SFA.DAS.SelfService.Web
             {
                 var policy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .RequireRole(_configuration["VstsConfig:RequiredRole"])
+                    .RequireRole(_configuration["RequiredRole"])
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })

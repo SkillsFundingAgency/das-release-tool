@@ -101,27 +101,40 @@ namespace SFA.DAS.SelfService.Web.Controllers.Whitelist
 
         private Dictionary<string, string> SetupOverrideVariables(string ipAddress, IEnumerable<Claim> claims)
         {
-            var userId = claims.Where(x => x.Type.Contains("nameidentifier")).FirstOrDefault().Value;
+            var formattedName = "";
+            var userId = claims.Where(x => x.Type.Equals("http://schemas.microsoft.com/identity/claims/objectidentifier")).FirstOrDefault();
 
-            if (String.IsNullOrEmpty(userId))
+            if (userId is null)
             {
                 _logger.LogError("Cannot find a valid userId to start whitelist");
                 throw new UnauthorizedAccessException();
             }
 
-            var nickname = claims.Where(x => x.Type.Contains("nickname")).FirstOrDefault().Value;
+            var upn = claims.Where(x => x.Type.Equals(ClaimTypes.Upn)).FirstOrDefault();
 
-            if (String.IsNullOrEmpty(nickname))
+            if (upn is null)
             {
                 _logger.LogError("Cannot find a valid nickname to start whitelist");
                 throw new UnauthorizedAccessException();
+            }
+            else
+            {
+                if (upn.Value.Contains("@"))
+                {
+                    formattedName = upn.Value.Split('@')[0];
+                }
+                else
+                {
+                    _logger.LogError("UPN Claim not in expected format");
+                    throw new UnauthorizedAccessException();
+                }
             }
 
             var overrideParameters = new Dictionary<string, string>()
             {
                 { WhitelistConstants.IpAddressOverrideKey, ipAddress},
-                { WhitelistConstants.UserIdOverrideKey, userId},
-                { WhitelistConstants.NameOverrideKey, nickname}
+                { WhitelistConstants.UserIdOverrideKey, userId.Value},
+                { WhitelistConstants.NameOverrideKey, formattedName}
             };
 
             return overrideParameters;
